@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#4b352c">
+  <meta name="description" content="남대문 사우나템 제품 및 사입단가 관리 웹앱">
+  <title>사우나템 사입 장부</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="appbar">
+    <div class="brand">
+      <img src="assets/icons/icon-192.png" alt="" width="38" height="38">
+      <div><h1>사우나템 사입 장부</h1><p>남대문 제품 리스트</p></div>
+    </div>
+    <div class="top-actions desktop-actions">
+      <button class="button ghost" id="exportCsv">CSV</button>
+      <button class="button ghost" id="exportJson">백업</button>
+      <button class="button primary" data-add>＋ 제품 추가</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="summary-panel" aria-label="요약">
+      <div class="summary-item"><span>등록 제품</span><strong id="itemCount">0</strong></div>
+      <div class="summary-item"><span>입력 단가</span><strong id="pricedCount">0</strong></div>
+      <div class="summary-item total"><span>사입단가 합계</span><strong id="grandTotal">0원</strong></div>
+    </section>
+
+    <section class="control-panel">
+      <label class="searchbox"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="제품명·업체명 검색" autocomplete="off"></label>
+      <div class="vendor-filters" id="vendorFilters" aria-label="업체 필터"></div>
+      <details class="more-menu">
+        <summary>관리</summary>
+        <div class="menu-popover">
+          <button id="importJson">백업 불러오기</button>
+          <button id="printBtn">인쇄 / PDF</button>
+          <button class="danger-text" id="resetBtn">기본 목록 복원</button>
+        </div>
+      </details>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </section>
+
+    <section class="supplier-note" aria-label="구매처 안내">
+      <button data-filter-vendor="제일상회"><b>제일상회</b><span>남대문시장길 20-1, 22호</span></button>
+      <button data-filter-vendor="부창상회"><b>부창상회</b><span>남대문시장4길 9 · 대도종합상가 D동 1층 3·4호</span></button>
+    </section>
+
+    <section class="desktop-view" aria-label="제품 표">
+      <div class="table-shell">
+        <table>
+          <thead><tr><th>제품</th><th>업체명</th><th>용도</th><th class="money-head">가격(원)</th><th>비고</th><th class="actions-head">관리</th></tr></thead>
+          <tbody id="desktopRows"></tbody>
+        </table>
+        <div class="empty-state" id="desktopEmpty" hidden>조건에 맞는 제품이 없습니다.</div>
+      </div>
+    </section>
+
+    <section class="mobile-view" id="mobileCards" aria-label="제품 목록"></section>
+    <div class="empty-state mobile-view" id="mobileEmpty" hidden>조건에 맞는 제품이 없습니다.</div>
+
+    <p class="source-note">기본 제품과 이미지는 제공된 <a href="https://www.instagram.com/reel/DeDRLGYToMU/" target="_blank" rel="noopener">꿀템콜렉터 릴스</a>를 기준으로 정리했습니다. 가격·용도·비고는 유통사에서 입력하세요.</p>
+  </main>
+
+  <div class="mobile-bottom mobile-view">
+    <div><span>총 사입단가</span><strong id="mobileTotal">0원</strong></div>
+    <button class="button primary" data-add>＋ 제품 추가</button>
+  </div>
+
+  <dialog id="editorDialog" class="editor-dialog">
+    <form method="dialog" id="editorForm">
+      <header class="dialog-head"><div><p id="dialogEyebrow">제품 정보</p><h2 id="dialogTitle">제품 편집</h2></div><button type="button" class="icon-button" data-close aria-label="닫기">✕</button></header>
+      <div class="dialog-body">
+        <div class="image-editor">
+          <img id="editImagePreview" alt="제품 이미지 미리보기">
+          <button type="button" class="button ghost" id="chooseImage">이미지 변경</button>
+          <input type="file" id="editImageFile" accept="image/*" hidden>
+        </div>
+        <div class="form-grid">
+          <label class="full"><span>제품명 *</span><input id="editName" required placeholder="제품명"></label>
+          <label><span>업체명</span><input id="editVendor" list="vendorList" placeholder="업체명"></label>
+          <label><span>가격(원)</span><input id="editPrice" inputmode="numeric" placeholder="0"></label>
+          <label class="full"><span>용도</span><textarea id="editPurpose" placeholder="제품 용도"></textarea></label>
+          <label class="full"><span>비고</span><textarea id="editNote" placeholder="MOQ·VAT·박스 입수량·연락처 등"></textarea></label>
+        </div>
+      </div>
+      <footer class="dialog-foot"><button type="button" class="button danger ghost" id="deleteInDialog">제품 삭제</button><span></span><button type="button" class="button ghost" data-close>취소</button><button type="submit" class="button primary">저장</button></footer>
+    </form>
+  </dialog>
+
+  <datalist id="vendorList"><option value="제일상회"><option value="부창상회"></datalist>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
